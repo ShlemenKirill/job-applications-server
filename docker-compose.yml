@@ -1,0 +1,50 @@
+# docker-compose.yml
+
+version: '3.8'
+services:
+
+  # Docker connection string: postgres://postgres:postgres@localhost:5432/
+
+  postgres:
+    container_name: postgres
+    build:
+      context: .
+      dockerfile: ./docker/postgres/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - postgres
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+#  app:
+#    container_name: interview-list-server
+#    build:
+#      context: .
+#      dockerfile: ./docker/app/Dockerfile
+#    ports:
+#      - "${PORT}:${PORT}"
+#    env_file:
+#      - .env
+#    depends_on:
+#      - postgres
+#    volumes:
+#      - .:/usr/src/app
+#      - /usr/src/app/node_modules
+#      - app:/var/lib/app/data
+#    networks:
+#      - postgres
+#    restart: unless-stopped
+
+volumes:
+  postgres:
+    name: 'postgres'
+#  app:
+#    name: 'nest_REST_API'
+networks:
+  postgres:
+    name: 'nest_REST_API_network'
+    driver: bridge
+

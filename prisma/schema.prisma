@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String        @id @default(uuid())
+  password    String
+  email       String
+  firstName   String
+  lastName    String
+  Application Application[]
+}
+
+model Application {
+  id               String            @id @default(uuid())
+  applyingDate     DateTime
+  position         String
+  source           ApplicationSource
+  status           ApplicationStatus
+  salary           String
+  link             String
+  companyId        String
+  currentStage     InterviewType?
+  nextInterviewDate DateTime?
+  recruiterId      String?
+  userId           String
+  company          Company           @relation(fields: [companyId], references: [id])
+  recruiter        Recruiter?        @relation(fields: [recruiterId], references: [id])
+  user             User              @relation(fields: [userId], references: [id])
+  interviews       Interview[]
+}
+
+model Company {
+  id          String        @id @default(uuid())
+  name        String
+  type        String?
+  link        String?
+  notes       String?
+  Application Application[]
+}
+
+model Recruiter {
+  id          String        @id @default(uuid())
+  name        String
+  contact     String?
+  Application Application[]
+}
+
+model Interview {
+  id            String        @id @default(uuid())
+  applicationId String
+  type          InterviewType
+  date          DateTime
+  notes         String?
+  feedback      String?
+  Application   Application   @relation(fields: [applicationId], references: [id])
+}
+
+enum ApplicationSource {
+  LINKEDIN
+  TELEGRAM
+}
+
+enum ApplicationStatus {
+  NO_ANSWER
+  WATCHED
+  OFFER
+}
+
+enum AnswerAfterInterview {
+  NO_ANSWER
+  REFUSE
+}
+
+enum InterviewType {
+  PRE_SCREEN
+  TECHNICAL
+}
